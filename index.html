@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Video Player</title>
+    <title>QR Code 3D Model Viewer</title>
     <style>
         #video {
             width: 100%;
@@ -12,19 +12,21 @@
         #canvas {
             display: none;
         }
-        #videoPlayer {
+        #model {
             width: 100%;
-            max-width: 600px;
+            height: 400px;
             margin-top: 20px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
-    <h1>QR Code Video Player</h1>
+    <h1>QR Code 3D Model Viewer</h1>
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
-    <video id="videoPlayer" controls></video>
+    <div id="model"></div>
     <script src="script.js"></script>
 </body>
 </html>
