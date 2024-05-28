@@ -6,6 +6,7 @@ const modelContainer = document.getElementById('model');
 // Get access to the camera
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
     .then(stream => {
+        console.log("Camera stream started");
         video.srcObject = stream;
         video.play();
     })
@@ -14,9 +15,14 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
     });
 
 video.addEventListener('canplay', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    requestAnimationFrame(tick);
+    if (video.videoWidth && video.videoHeight) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        console.log("Video dimensions:", video.videoWidth, video.videoHeight);
+        requestAnimationFrame(tick);
+    } else {
+        console.error("Video dimensions are not available.");
+    }
 });
 
 function tick() {
@@ -24,7 +30,10 @@ function tick() {
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height);
     if (code) {
+        console.log("QR Code detected:", code.data);
         load3DModel(code.data);
+    } else {
+        console.log("No QR code detected.");
     }
     requestAnimationFrame(tick);
 }
@@ -39,6 +48,7 @@ function load3DModel(url) {
 
     const loader = new THREE.GLTFLoader();
     loader.load(url, (gltf) => {
+        console.log("3D model loaded:", url);
         scene.add(gltf.scene);
         camera.position.z = 5;
         const animate = function () {
@@ -49,6 +59,6 @@ function load3DModel(url) {
         };
         animate();
     }, undefined, (error) => {
-        console.error(error);
+        console.error('Error loading 3D model:', error);
     });
 }
