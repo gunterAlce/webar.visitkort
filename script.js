@@ -1,7 +1,7 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const videoPlayer = document.getElementById('videoPlayer');
+const modelContainer = document.getElementById('model');
 
 // Get access to the camera
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -31,20 +31,36 @@ function tick() {
     const code = jsQR(imageData.data, imageData.width, imageData.height);
     if (code) {
         console.log("QR Code detected:", code.data);
-        loadVideo(code.data);
+        load3DModel(code.data);
     } else {
         console.log("No QR code detected.");
     }
     requestAnimationFrame(tick);
 }
 
-function loadVideo(url) {
-    console.log("Loading video from URL:", url);
-    videoPlayer.src = url;
-    videoPlayer.style.display = 'block';
-    videoPlayer.play().then(() => {
-        console.log("Video playing.");
-    }).catch(err => {
-        console.error("Error playing video:", err);
+function load3DModel(url) {
+    modelContainer.innerHTML = ''; // Clear previous model
+    console.log("Loading 3D model from URL:", url);
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, modelContainer.clientWidth / modelContainer.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(modelContainer.clientWidth, modelContainer.clientHeight);
+    modelContainer.appendChild(renderer.domElement);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load(url, (gltf) => {
+        console.log("3D model successfully loaded:", url);
+        scene.add(gltf.scene);
+        camera.position.z = 5;
+        const animate = function () {
+            requestAnimationFrame(animate);
+            gltf.scene.rotation.x += 0.01;
+            gltf.scene.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+        animate();
+    }, undefined, (error) => {
+        console.error('Error loading 3D model:', error);
     });
 }
